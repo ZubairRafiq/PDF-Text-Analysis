@@ -42,7 +42,12 @@ def getFilename(wb):
 def getDetails(wb, pdf_file):               #Function for displaying details in Excel
     sheet = wb.sheets['PDF_Details']
     
-    #flag = True
+    def getRowCell():               #Function for getting next empty cell number
+            Y = wb.sheets['PDF_Details'].range('D' + str(wb.sheets['PDF_Details'].cells.last_cell.row)).end('up').row + 1
+            return Y
+
+    lower = getRowCell()        # Get next empty cell in Row D
+
     
     if(getDetails.flag == True ):           #Check for flag to change cell number for dispalying different file details
         getDetails.flag = False
