@@ -1,8 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[302]:
-
 from sys import flags
 import xlwings as xw
 import pandas as pd
@@ -10,23 +5,19 @@ import numpy as np
 import PyPDF2
 import re
 import os
-import plotly.express as px
-import plotly
-#import time
-from pathlib import Path  
+from pathlib import Path 
 from tika import parser # pip install tika
 
 from typing import Dict
 import fitz  # pip install pymupdf
-import xlsxwriter
-
-from openpyxl.worksheet.table import Table
 
 import nltk
 nltk.download('stopwords')
 from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize 
+from nltk.tokenize import word_tokenize
 stop_words = set(stopwords.words('german')) #Get german Stop Words
+newStopWords = {'ungheinrich'}
+stop_words = stop_words.union(newStopWords)
 
 
 # In[303]:
