@@ -40,16 +40,26 @@ def getDetails(wb, pdf_file):               #Function for displaying details in 
     lower = getRowCell()        # Get next empty cell in Row D
 
     
-    if(getDetails.flag == True ):           #Check for flag to change cell number for dispalying different file details
+    if(getDetails.flag == True ):           #Check for flag to display header in first iteration
         getDetails.flag = False
-        sheet.range('A2:Q10000').clear()
-    else:
-        getDetails.i += 20
-    sheet["A"+ str(getDetails.i-1)].value = "Filename = " + str(pdf_file.name)
-    #sheet.add_table('B3:F7')
-    #sheet.tables.add(source=sheet["A"+ str(getDetails.i-1)], name='my_table').update(df.head(10))
-    sheet["A" + str(getDetails.i)].value = df.head(10)
-    #sheet["E" + str(getDetails.i)].value = get_bookmarks(str(pdf_file))
+        #sheet.range('A2:Q10000').clear_contents()
+      
+        sheet["A" + str(lower-1)].value = "Filename"
+        sheet["B" + str(lower-1)].value = "Type"
+        sheet["C" + str(lower-1)].value = "Position"
+        sheet["D" + str(lower-1)].value = "Content"
+        sheet["E" + str(lower-1)].value = "Frequency"
+    #else:
+        #getDetails.i += 30
+        #sheet["A"+ str(getDetails.i-1)].value = "Filename = " + str(pdf_file.name)
+
+    sheet["D" + str(lower)].value = df.head(10)     #Display list of keywords
+
+    middle = getRowCell()       # Get empty cell after keywords in Row D
+
+    sheet["C" + str(middle)].value = get_bookmarks(str(pdf_file))       #Display list of bookmarks
+
+
     
 
 def main():
