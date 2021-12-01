@@ -59,7 +59,23 @@ def getDetails(wb, pdf_file):               #Function for displaying details in 
 
     sheet["C" + str(middle)].value = get_bookmarks(str(pdf_file))       #Display list of bookmarks
 
+    b_position = 1
+    for i in range(lower, middle-1):        #Display position for each Keyword in Row C
+        sheet["C" + str(i+1)].value = b_position
+        b_position = b_position + 1
 
+    upper = getRowCell()        # Get empty cell after bookmarks in Row D
+
+    k_position = 1
+    for i in range(middle, upper):          #Display position for each bookmark in Row C
+        sheet["C" + str(i)].value = k_position
+        k_position = k_position + 1
+
+    sheet.range('B'+ str(lower), 'B' + str(middle-1)).value = 'Keyword'
+    sheet.range('B'+ str(middle), 'B' + str(upper-1)).value = 'Bookmark'
+
+    sheet.range('A'+ str(lower), 'A' + str(upper-1)).value = str(pdf_file.name)     #Display filename
+    #sheet.range('C'+ str(lower), 'C' + str(middle-1)).value = [[1]]
     
 
 def main():
@@ -85,20 +101,20 @@ sheet = wb.sheets[0]
 
 PATH_PDF_FILES = sheet.range('source_dir').value            #Get folder path from Excel Cell (Soucre Dir)
 
-pdf_files = list(Path(PATH_PDF_FILES).glob('*.pdf'))        #List all PDF file paths in a List
+pdf_files = list(Path(PATH_PDF_FILES).glob('**/*.pdf'))        #List all PDF file paths in a List. "**/" for multiple folders
 
 
 getDetails.flag = True
-getDetails.i = 4
+#getDetails.i = 4
 
 for pdf_file in pdf_files:                                  # iterate through each file
-    raw = parser.from_file(str(pdf_file))                   
+    raw = parser.from_file(str(pdf_file))
     text = raw['content']
-    
-    keywords = re.findall(r'[a-zA-Z]\w+',text)              # Get keywords without digits and special characters
-    keywords = [w for w in keywords if not w.lower() in stop_words and w.split() if len(w)>3]       # remove German stop words and words less than 3 chars
 
-    df = pd.DataFrame(list(set(keywords)),columns=['keywords'])  #Dataframe with unique keywords to avoid repetition in rows
+    keywords = re.findall(r'[a-zA-Z]\w+',text)              # Get keywords without digits and special characters
+    keywords = [w for w in keywords if w.lower() not in stop_words and w.split() if len(w)>3 ]       # remove German stop words and words less than 3 chars
+
+    df = pd.DataFrame(list(set(keywords)),columns=['keywords']) #Dataframe with unique keywords to avoid repetition in rows
 
     def weightage(word,text,number_of_documents=1):
         word_list = re.findall(word,text)
@@ -106,11 +122,11 @@ for pdf_file in pdf_files:                                  # iterate through ea
         tf = number_of_times_word_appeared/float(len(text))
         idf = np.log((number_of_documents)/float(number_of_times_word_appeared))
         tf_idf = tf*idf
-        return number_of_times_word_appeared,tf,idf ,tf_idf
+        return number_of_times_word_appeared,tf, idf ,tf_idf
 
-    df['Frequency'] = df['keywords'].apply(lambda x: weightage(x,text)[0])  
+    df['Frequency'] = df['keywords'].apply(lambda x: weightage(x,text)[0])
 
-    df = df.sort_values('Frequency',ascending=False)            # Add sorted frequecy list 
+    df = df.sort_values('Frequency',ascending=False)            # Add sorted frequecy list
     #df.to_csv('keywords.csv')
     df = df.set_index('keywords')
     df.head(10)
@@ -122,8 +138,9 @@ for pdf_file in pdf_files:                                  # iterate through ea
             for level, title, page in toc:
                 bookmarks[page] = title
         return bookmarks
-    
+
     getDetails(wb, pdf_file)
+
 
 
 
